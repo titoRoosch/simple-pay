@@ -17,3 +17,23 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::prefix('auth')->middleware('api')->namespace('App\Http\Controllers')->group(function () {
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+    Route::post('me', 'AuthController@me');
+});
+
+Route::prefix('user')->middleware('api')->namespace('App\Http\Controllers')->group(function () {
+    Route::get('index', 'UserController@index')->middleware('jwt.auth', 'checkUserRole:super');
+    Route::get('show/{id}', 'UserController@show')->middleware('jwt.auth', 'CheckUserOrRole:super');
+    Route::post('store', 'UserController@store');
+    Route::put('update/{id}', 'UserController@update')->middleware('jwt.auth', 'CheckUserOrRole:super');
+    Route::delete('delete/{id}', 'UserController@delete')->middleware('jwt.auth', 'checkUserRole:super');
+});
+
+Route::prefix('transfer')->middleware('api')->namespace('App\Http\Controllers')->group(function () {
+    Route::post('/', 'TransferController@transfer');
+    Route::post('cancel/{id}', 'TransferController@cancel');
+});
