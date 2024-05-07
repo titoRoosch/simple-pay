@@ -35,5 +35,5 @@ Route::prefix('user')->middleware('api')->namespace('App\Http\Controllers')->gro
 
 Route::prefix('transfer')->middleware('api')->namespace('App\Http\Controllers')->group(function () {
     Route::post('/', 'TransferController@transfer')->middleware('jwt.auth', 'CheckIsForbiddenUser:shopkeeper');
-    Route::post('cancel/{id}', 'TransferController@cancel')->middleware('jwt.auth', 'checkUserRole:super');
+    Route::delete('cancel/{id}', 'TransferController@cancel')->middleware('jwt.auth', 'checkUserRole:super');
 });

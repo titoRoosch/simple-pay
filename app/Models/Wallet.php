@@ -26,9 +26,6 @@ class Wallet extends Model
             throw new \InvalidArgumentException("Insufficient balance");
         }
 
-        $this->load('user');
-        $recipient->load('user');
-
         return $this->getConnection()->transaction(function () use ($recipient, $amount) {
             $this->decrement('balance', $amount);
             $recipient->increment('balance', $amount);
@@ -42,6 +39,5 @@ class Wallet extends Model
             ]);
         });
     }
-
 
 }

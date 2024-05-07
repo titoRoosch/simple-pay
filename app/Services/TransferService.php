@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\Models\Transfer;
+use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -34,8 +34,14 @@ class TransferService {
         $wallet1 = Wallet::where('user_id', $data['payer'])->first();
         $wallet2 = Wallet::where('user_id', $data['payee'])->first();
 
-        $transfer = $wallet1->transfer($wallet2, 100);
-        $this->sendMessage();
+        try {
+            $transfer = $wallet1->transfer($wallet2, $data['value']);
+            $this->sendMessage();
+
+            return $transfer;
+        }  catch (\Exception $e) {
+            throw new \InvalidArgumentException( $e->getMessage());
+        }
     }
 
     private function sendMessage() {
@@ -50,7 +56,23 @@ class TransferService {
 
     public function cancel($id) {
 
-
+        try {
+            $transaction = Transaction::findOrFail($id);
+    
+            $payerWallet = Wallet::findOrFail($transaction->payer_wallet);
+            $payeeWallet = Wallet::findOrFail($transaction->payee_wallet);
+    
+            $payerWallet->increment('balance', $transaction->amount);
+            $payeeWallet->decrement('balance', $transaction->amount);
+    
+            $transaction->delete();
+    
+            return "Transaction reverted.";
+        } catch (ModelNotFoundException $e) {
+            return "Transaction not found.";
+        } catch (\Exception $e) {
+            return "Transaction Cancel Error: " . $e->getMessage();
+        }
 
     }
 }

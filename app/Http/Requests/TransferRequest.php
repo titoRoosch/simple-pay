@@ -25,8 +25,8 @@ class TransferRequest extends FormRequest
     public function messages()
     {
         return [
-            'value.required' => 'The field password is required.',
-            'value.string' => 'The field password must be a string.',
+            'value.required' => 'The field value is required.',
+            'value.string' => 'The field value must be a string.',
             'payer.required' => 'The field payer is required.',
             'payer.integer' => 'The field payer must be a integer.',
             'payer.exists' => 'The informed payer is invalid.',

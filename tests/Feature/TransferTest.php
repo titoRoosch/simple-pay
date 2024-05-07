@@ -29,8 +29,6 @@ class TransferTest extends TestBase
 
         $responseData = json_decode($content, true);
 
-        dd($response);
-
         $response->assertStatus(200);
     }
 
@@ -54,24 +52,23 @@ class TransferTest extends TestBase
         $response->assertStatus(403);
     }
 
-    public function testInvalidTrasnfer()
+    public function testInvalidTransfer()
     {
         $mock = $this->mocks();
         $authData = $this->createUserAndGetToken();
 
 
         $data = [
-            "value" => 100.0,
-            "payer" => 4,
-            "payee" => 15
+            "value" => 100000.0,
+            "payer" => $authData['user']->id,
+            "payee" => $mock ['users'][0]->id
         ];
 
         $response = $this->makeRequest('post', '/api/transfer', $authData['header'], $data);
         $content = $response->getContent();
 
         $responseData = json_decode($content, true);
-
-        $response->assertStatus(403);
+        $response->assertStatus(500);
     }
 
     public function testSucessCancelTransfer()
@@ -81,11 +78,18 @@ class TransferTest extends TestBase
 
         $data = [
             "value" => 100.0,
-            "payer" => 4,
-            "payee" => 15
+            "payer" => $authData['user']->id,
+            "payee" => $mock ['users'][0]->id
         ];
 
-        $response = $this->makeRequest('post', '/api/transfer/cancel', $authData['header'], $data);
+        $response = $this->makeRequest('post', '/api/transfer', $authData['header'], $data);
+        $content = $response->getContent();
+
+        $responseData = json_decode($content, true);
+
+
+        $authData = $this->createUserAndGetToken('super');
+        $response = $this->makeRequest('delete', '/api/transfer/cancel/'.$responseData['id'], $authData['header'], $data);
         $content = $response->getContent();
 
         $responseData = json_decode($content, true);
