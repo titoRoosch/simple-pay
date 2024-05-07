@@ -29,6 +29,7 @@ class TransferTest extends TestBase
 
         $responseData = json_decode($content, true);
 
+        dd($response);
 
         $response->assertStatus(200);
     }

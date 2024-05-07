@@ -26,7 +26,6 @@ class Wallet extends Model
             throw new \InvalidArgumentException("Insufficient balance");
         }
 
-        // Carrega os usuários associados aos wallets
         $this->load('user');
         $recipient->load('user');
 
@@ -35,8 +34,8 @@ class Wallet extends Model
             $recipient->increment('balance', $amount);
 
             return Transaction::create([
-                'payer_id' => $this->user_id, // Acessa o ID do usuário associado a este wallet
-                'payee_id' => $recipient->user_id, // Acessa o ID do usuário associado ao wallet do destinatário
+                'payer_id' => $this->user_id,
+                'payee_id' => $recipient->user_id,
                 'payer_wallet' => $this->id,
                 'payee_wallet' => $recipient->id,
                 'amount' => $amount,
