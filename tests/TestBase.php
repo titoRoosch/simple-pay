@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Testing\TestResponse;
 use App\Models\User;
+use App\Models\Wallet;
 
 abstract class TestBase extends BaseTestCase
 {
@@ -17,6 +18,12 @@ abstract class TestBase extends BaseTestCase
         $user = User::factory()->create([
             'role' => $role,
         ]);
+
+        $wallet = Wallet::factory()->create([
+            'user_id' => $user->id,
+            'balance' => 100
+        ]);
+
 
         $response = $this->post('/api/auth/login', [
             'email' => $user->email,

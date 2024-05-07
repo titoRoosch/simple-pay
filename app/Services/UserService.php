@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Wallet;
 use App\Interfaces\CrudServiceInterface;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -43,7 +44,14 @@ class UserService implements CrudServiceInterface {
             return $errorsArray;
         }
 
-        return User::create($data);
+        $user = User::create($data);
+
+        $wallet = new Wallet();
+        $wallet->user_id = $user->id;
+        $wallet->balance = 0;
+        $wallet->save();
+    
+        return $user;
     }
 
     public function update(array $data, $id)

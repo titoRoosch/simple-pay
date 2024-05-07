@@ -14,7 +14,7 @@ class UserController extends Controller
     protected $userService;
 
     /**
-     * Create a new AuthController instance.
+     * Create a new UserController instance.
      *
      * @return void
      */
