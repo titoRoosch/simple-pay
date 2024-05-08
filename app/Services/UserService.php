@@ -3,30 +3,36 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\Models\Wallet;
-use App\Interfaces\CrudServiceInterface;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Repositories\UserRepositoryInterface;
 
-class UserService implements CrudServiceInterface {
+class UserService {
 
-    public function getAll()
+    protected $userRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository)
     {
-        return User::get();
+        $this->userRepository = $userRepository;
     }
 
-    public function getById($id)
+    public function getAllUsers()
     {
-        return User::find($id);
+        return $this->userRepository->getAll();
     }
 
-    public function getByName(string $name)
+    public function getUserById($id)
     {
-        return User::where('name', 'like', "%$name%");
+        return $this->userRepository->getById($id);
+    }
+
+    public function getUserByName(string $name)
+    {
+        return $this->userRepository->getByName($name);
 
     }
 
-    public function create(array $data)
+    public function createUser(array $data)
     {
         $rules = [
             'email' => 'required|string|max:255|unique:users,email',
@@ -44,17 +50,10 @@ class UserService implements CrudServiceInterface {
             return $errorsArray;
         }
 
-        $user = User::create($data);
-
-        $wallet = new Wallet();
-        $wallet->user_id = $user->id;
-        $wallet->balance = 0;
-        $wallet->save();
-    
-        return $user;
+        return $this->userRepository->create($data);
     }
 
-    public function update(array $data, $id)
+    public function updateUser(array $data, $id)
     {
         $rules = [
             'email' => 'required|string|max:255|unique:users,email,' . $id,
@@ -72,15 +71,12 @@ class UserService implements CrudServiceInterface {
             return $errorsArray;
         }
 
-        $users = User::findOrFail($id);
-        $users->update($data);
-        return $users;
+        return $this->userRepository->update($data, $id);
     }
 
-    public function delete($id)
+    public function deleteUser($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        return $this->userRepository->delete($id);
     }
 
 }

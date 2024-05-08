@@ -87,9 +87,8 @@ class TransferTest extends TestBase
 
         $responseData = json_decode($content, true);
 
-
         $authData = $this->createUserAndGetToken('super');
-        $response = $this->makeRequest('delete', '/api/transfer/cancel/'.$responseData['id'], $authData['header'], $data);
+        $response = $this->makeRequest('delete', '/api/transfer/cancel/'.$responseData['data']['id'], $authData['header'], $data);
         $content = $response->getContent();
 
         $responseData = json_decode($content, true);

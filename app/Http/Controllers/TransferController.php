@@ -26,13 +26,16 @@ class TransferController extends Controller
     public function transfer(TransferRequest $request)
     {
         $data = $request->only('value', 'payer', 'payee');
-        $transfer = $this->transferService->transfer($data);
+        $transfer = $this->transferService->createTransaction($data);
+        if(!$transfer['success']){
+            return response()->json(['error' => $transfer['message']], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
         return response()->json($transfer);
     }
 
     public function cancel($id)
     {
-        $delete = $this->transferService->cancel($id);
+        $delete = $this->transferService->cancelTransaction($id);
         return response()->json($delete);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Interfaces;
+namespace App\Repositories;
 
-interface CrudServiceInterface
+interface UserRepositoryInterface
 {
     public function getAll();
 

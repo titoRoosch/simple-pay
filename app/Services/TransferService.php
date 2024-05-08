@@ -2,14 +2,19 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Transaction;
-use App\Models\Wallet;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Repositories\TransferRepositoryInterface;
 
 class TransferService {
+
+    protected $transferRepository;
+
+    public function __construct(TransferRepositoryInterface $transferRepository)
+    {
+        $this->transferRepository = $transferRepository;
+    }
 
     private function authorize() {
 
@@ -23,7 +28,7 @@ class TransferService {
 
     }
 
-    public function transfer($data) {
+    public function createTransaction($data) {
 
         $authorization = $this->authorize();
 
@@ -31,17 +36,14 @@ class TransferService {
             throw new \InvalidArgumentException("Unauthorized transaction");
         }
 
-        $wallet1 = Wallet::where('user_id', $data['payer'])->first();
-        $wallet2 = Wallet::where('user_id', $data['payee'])->first();
-
         try {
-            $transfer = $wallet1->transfer($wallet2, $data['value']);
+            $transfer = $this->transferRepository->transfer($data);
             $this->sendMessage();
-
-            return $transfer;
-        }  catch (\Exception $e) {
-            throw new \InvalidArgumentException( $e->getMessage());
+            return ['success' => true, 'data' => $transfer];
+        } catch (\InvalidArgumentException $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
         }
+        
     }
 
     private function sendMessage() {
@@ -54,25 +56,9 @@ class TransferService {
         }
     }
 
-    public function cancel($id) {
+    public function cancelTransaction($id) {
 
-        try {
-            $transaction = Transaction::findOrFail($id);
-    
-            $payerWallet = Wallet::findOrFail($transaction->payer_wallet);
-            $payeeWallet = Wallet::findOrFail($transaction->payee_wallet);
-    
-            $payerWallet->increment('balance', $transaction->amount);
-            $payeeWallet->decrement('balance', $transaction->amount);
-    
-            $transaction->delete();
-    
-            return "Transaction reverted.";
-        } catch (ModelNotFoundException $e) {
-            return "Transaction not found.";
-        } catch (\Exception $e) {
-            return "Transaction Cancel Error: " . $e->getMessage();
-        }
+        $this->transferRepository->cancel($id);
 
     }
 }
