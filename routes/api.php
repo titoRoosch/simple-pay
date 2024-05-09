@@ -37,3 +37,9 @@ Route::prefix('transfer')->middleware('api')->namespace('App\Http\Controllers')-
     Route::post('/', 'TransferController@transfer')->middleware('jwt.auth', 'CheckIsForbiddenUser:shopkeeper');
     Route::delete('cancel/{id}', 'TransferController@cancel')->middleware('jwt.auth', 'checkUserRole:super');
 });
+
+Route::prefix('wallet')->middleware('api')->namespace('App\Http\Controllers')->group(function () {
+    Route::get('show/{id}', 'WalletController@show')->middleware('jwt.auth', 'CheckUserOrRole:super');
+    Route::post('withdrawal/{id}', 'WalletController@withdrawal')->middleware('jwt.auth', 'CheckUserOrRole:super');
+    Route::post('deposit/{id}', 'WalletController@deposit')->middleware('jwt.auth', 'CheckUserOrRole:super');
+});

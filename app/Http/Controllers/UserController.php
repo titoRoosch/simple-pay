@@ -24,13 +24,13 @@ class UserController extends Controller
     }
 
     public function index() {
-        $author = $this->userService->getAllUsers();
-        return response()->json($author);
+        $user = $this->userService->getAllUsers();
+        return response()->json($user);
     }
 
     public function show($id) {
-        $author = $this->userService->getUserById($id);
-        return response()->json($author);
+        $user = $this->userService->getUserById($id);
+        return response()->json($user);
     }
 
     public function store(UserRequest $request) {
@@ -42,8 +42,8 @@ class UserController extends Controller
             'document' => $request['document'],
         ];
         
-        $author = $this->userService->createUser($data);
-        return response()->json($author);
+        $user = $this->userService->createUser($data);
+        return response()->json($user);
     }
 
     public function update(UserRequest $request, $id) {
@@ -55,12 +55,12 @@ class UserController extends Controller
             'document' => $request['document'],
         ];
 
-        $author = $this->userService->updateUser($data, $id);
-        return response()->json($author);
+        $user = $this->userService->updateUser($data, $id);
+        return response()->json($user);
     }
 
     public function delete($id) {
-        $author = $this->userService->deleteUser($id);
+        $user = $this->userService->deleteUser($id);
         return response()->json(null);
     }
 }

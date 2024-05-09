@@ -37,7 +37,7 @@ abstract class TestBase extends BaseTestCase
             'Authorization' => 'Bearer ' . $token ,
         ];
 
-        return ['user' => $user, 'token' => $token, 'header' => $header];
+        return ['user' => $user, 'wallet' => $wallet, 'token' => $token, 'header' => $header];
     }
 
     protected function makeRequest(string $method, string $uri, array $headers = [], array $data = []): TestResponse
